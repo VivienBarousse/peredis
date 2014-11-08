@@ -14,6 +14,16 @@ func TestWriteNil(t *testing.T) {
   }
 }
 
+func TestWriteInteger(t *testing.T) {
+  output := new(bytes.Buffer)
+  serializer := NewSerializer(output)
+
+  serializer.WriteInteger(123)
+  if output.String() != ":123\r\n" {
+    t.Errorf("Expected `output` to be \"$6\r\nfoobar\r\n\", was \"%v\"", output)
+  }
+}
+
 func TestWriteString(t *testing.T) {
   output := new(bytes.Buffer)
   serializer := NewSerializer(output)

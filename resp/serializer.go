@@ -17,6 +17,10 @@ func (self *Serializer) WriteNil() {
   self.output.Write([]byte("$-1\r\n"))
 }
 
+func (self *Serializer) WriteInteger(value int) {
+  fmt.Fprintf(self.output, ":%d\r\n", value)
+}
+
 func (self *Serializer) WriteString(value string) {
   fmt.Fprintf(self.output, "$%d\r\n%s\r\n", len(value), value)
 }
