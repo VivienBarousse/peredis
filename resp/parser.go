@@ -50,7 +50,11 @@ func (self *Parser) ReadInlineCommand() ([]string, error) {
 }
 
 func (self *Parser) ReadObject() (interface{}, error) {
-  read, _ := self.input.Peek(1)
+  read, err := self.input.Peek(1)
+  if err != nil {
+    return nil, err
+  }
+
   next := read[0]
   if next == '$' {
     return self.ReadBulkString()
