@@ -65,3 +65,46 @@ func TestSetValueAlreadyExists(t *testing.T) {
   }
 }
 
+func TestMset(t *testing.T) {
+  s := NewMemoryStorage();
+
+  s.Mset("foo", "bar", "baz", "foo")
+
+  value, _ := s.Get("foo")
+  if value != "bar" {
+    t.Errorf("Expected `value` to be \"bar\", got \"%v\"", value)
+  }
+  value, _ = s.Get("baz")
+  if value != "foo" {
+    t.Errorf("Expected `value` to be \"foo\", got \"%v\"", value)
+  }
+}
+
+func TestMsetValueAlreadyExists(t *testing.T) {
+  s := NewMemoryStorage();
+
+  s.Set("foo", "wrong")
+  s.Set("baz", "wrong")
+  s.Mset("foo", "bar", "baz", "foo")
+
+  value, _ := s.Get("foo")
+  if value != "bar" {
+    t.Errorf("Expected `value` to be \"bar\", got \"%v\"", value)
+  }
+  value, _ = s.Get("baz")
+  if value != "foo" {
+    t.Errorf("Expected `value` to be \"foo\", got \"%v\"", value)
+  }
+}
+
+func TestMsetSetKeyTwice(t *testing.T) {
+  s := NewMemoryStorage();
+
+  s.Mset("foo", "bar", "foo", "baz")
+
+  value, _ := s.Get("foo")
+  if value != "baz" {
+    t.Errorf("Expected `value` to be \"baz\", got \"%v\"", value)
+  }
+}
+
