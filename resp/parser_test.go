@@ -7,10 +7,13 @@ func TestReadBulkString(t *testing.T) {
   input := strings.NewReader("$6\r\nfoobar\r\n")
   parser := NewParser(input)
 
-  bulk_string := parser.ReadBulkString()
+  bulk_string, err := parser.ReadBulkString()
 
   if bulk_string != "foobar" {
     t.Errorf("Expected `bulk_string` to be \"foobar\", was \"%v\"", bulk_string)
+  }
+  if err != nil {
+    t.Errorf("Expected `err` to be \"nil\", was \"%v\"", err)
   }
 }
 
@@ -18,7 +21,7 @@ func TestReadInlineCommand(t *testing.T) {
   input := strings.NewReader("SET foo bar\r\n")
   parser := NewParser(input)
 
-  command := parser.ReadInlineCommand()
+  command, err := parser.ReadInlineCommand()
   if len(command) != 3 {
     t.Errorf("Expected `len(command)` to be \"3\", was \"%v\"", len(command))
   }
@@ -30,6 +33,9 @@ func TestReadInlineCommand(t *testing.T) {
   }
   if command[2] != "bar" {
     t.Errorf("Expected `command[2]` to be \"bar\", was \"%v\"", command[2])
+  }
+  if err != nil {
+    t.Errorf("Expected `err` to be \"nil\", was \"%v\"", err)
   }
 }
 
@@ -37,10 +43,13 @@ func TestReadObjectWithBulkString(t *testing.T) {
   input := strings.NewReader("$6\r\nfoobar\r\n")
   parser := NewParser(input)
 
-  object := parser.ReadObject()
+  object, err := parser.ReadObject()
 
   if object != "foobar" {
     t.Errorf("Expected `object` to be \"foobar\", was \"%v\"", object)
+  }
+  if err != nil {
+    t.Errorf("Expected `err` to be \"nil\", was \"%v\"", err)
   }
 }
 
@@ -48,7 +57,8 @@ func TestReadObjectWithInlineCommand(t *testing.T) {
   input := strings.NewReader("SET foo bar\r\n")
   parser := NewParser(input)
 
-  command := parser.ReadObject().([]string)
+  object, err := parser.ReadObject()
+  command := object.([]string)
   if len(command) != 3 {
     t.Errorf("Expected `len(command)` to be \"3\", was \"%v\"", len(command))
   }
@@ -60,6 +70,9 @@ func TestReadObjectWithInlineCommand(t *testing.T) {
   }
   if command[2] != "bar" {
     t.Errorf("Expected `command[2]` to be \"bar\", was \"%v\"", command[2])
+  }
+  if err != nil {
+    t.Errorf("Expected `err` to be \"nil\", was \"%v\"", err)
   }
 }
 
