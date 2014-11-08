@@ -17,6 +17,26 @@ func TestReadBulkString(t *testing.T) {
   }
 }
 
+func TestReadBulkArray(t *testing.T) {
+  input := strings.NewReader("*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n")
+  parser := NewParser(input)
+
+  bulk_array, err := parser.ReadBulkArray()
+
+  if len(bulk_array) != 2 {
+    t.Errorf("Expected `len(bulk_array)` to be \"2\", was \"%v\"", len(bulk_array))
+  }
+  if bulk_array[0] != "foo" {
+    t.Errorf("Expected `bulk_array[0]` to be \"foo\", was \"%v\"", bulk_array[0])
+  }
+  if bulk_array[1] != "bar" {
+    t.Errorf("Expected `bulk_array[1]` to be \"bar\", was \"%v\"", bulk_array[1])
+  }
+  if err != nil {
+    t.Errorf("Expected `err` to be \"nil\", was \"%v\"", err)
+  }
+}
+
 func TestReadInlineCommand(t *testing.T) {
   input := strings.NewReader("SET foo bar\r\n")
   parser := NewParser(input)
@@ -47,6 +67,27 @@ func TestReadObjectWithBulkString(t *testing.T) {
 
   if object != "foobar" {
     t.Errorf("Expected `object` to be \"foobar\", was \"%v\"", object)
+  }
+  if err != nil {
+    t.Errorf("Expected `err` to be \"nil\", was \"%v\"", err)
+  }
+}
+
+func TestReadObjectWithBulkArray(t *testing.T) {
+  input := strings.NewReader("*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n")
+  parser := NewParser(input)
+
+  object, err := parser.ReadObject()
+  bulk_array := object.([]interface{})
+
+  if len(bulk_array) != 2 {
+    t.Errorf("Expected `len(bulk_array)` to be \"2\", was \"%v\"", len(bulk_array))
+  }
+  if bulk_array[0] != "foo" {
+    t.Errorf("Expected `bulk_array[0]` to be \"foo\", was \"%v\"", bulk_array[0])
+  }
+  if bulk_array[1] != "bar" {
+    t.Errorf("Expected `bulk_array[1]` to be \"bar\", was \"%v\"", bulk_array[1])
   }
   if err != nil {
     t.Errorf("Expected `err` to be \"nil\", was \"%v\"", err)

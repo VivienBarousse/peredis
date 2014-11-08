@@ -25,6 +25,24 @@ func (self *Parser) ReadBulkString() (string, error) {
   return string(value), nil
 }
 
+func (self *Parser) ReadBulkArray() ([]interface{}, error) {
+  self.input.ReadByte()
+  line, _ := self.input.ReadString('\n')
+  length, _ := strconv.Atoi(line[:len(line) - 2])
+  value := make([]interface{}, length)
+
+  for i := 0; i < length; i++ {
+    object, err := self.ReadObject()
+    if err != nil {
+      return make([]interface{}, 0), err
+    }
+
+    value[i] = object
+  }
+
+  return value, nil
+}
+
 func (self *Parser) ReadInlineCommand() ([]string, error) {
   line, _ := self.input.ReadString('\n')
   line = line[:len(line) - 2]
@@ -36,6 +54,8 @@ func (self *Parser) ReadObject() (interface{}, error) {
   next := read[0]
   if next == '$' {
     return self.ReadBulkString()
+  } else if (next == '*') {
+    return self.ReadBulkArray()
   } else {
     return self.ReadInlineCommand()
   }
